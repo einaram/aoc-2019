@@ -23,7 +23,12 @@ for item in range(start,stop+1):
     for i, number in enumerate(single_pw_list):
         try:
             if single_pw_list[i] == single_pw_list[i+1]:
-                got_double = True
+                if i == 0 or single_pw_list[i-1] !=number:
+                    try:
+                        if single_pw_list[i+2] !=number:
+                            got_double = True
+                    except:
+                        got_double = True
         except IndexError:
             pass
         try:
@@ -34,7 +39,8 @@ for item in range(start,stop+1):
 
     if got_double and not decreasing:
         valid.append(item)
-print("sum",valid, len(valid))
+print("sum"
+, len(valid))
 
 
 
