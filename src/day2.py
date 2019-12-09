@@ -39,5 +39,5 @@ def part2(data):
         for v in range(100):
             if prerunner(data,n,v) == 19690720:
                 print(f"2. {100 * n + v}")
-                break
-part2(data)
+                return 100*n+v
+assert part2(data) == 2505
