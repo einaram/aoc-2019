@@ -1,3 +1,6 @@
 .vs
-venv/
-
+.vscode/
+.gitignore
+.vscode
+venv
+.vscode/settings.json
