@@ -1,4 +1,6 @@
 .vs
 venv
-.vscode
+# .vscode
 
+vevn/
+.gitignore
