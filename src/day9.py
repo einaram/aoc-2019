@@ -1,9 +1,10 @@
 
 
 class Computer():
-    def __init(self):
+    def __init__(self):
         self.relative_base = 0
         self.memory = []
+        self.output = []
     def get_input_values(self, param_value, memory, idx):
         POSITION_MODE = 0
         IMMEDIATE_MODE = 1
@@ -30,7 +31,7 @@ class Computer():
         return param_mode1, param_mode2, param_mode3, opcode
 
     def opcode_runned(self, data_runner, o_input=None):
-        self.memory = data_runner.copy() + [None]*10**6
+        self.memory = data_runner.copy() + [0]*10**6
 
         print("runner")
 
@@ -74,10 +75,7 @@ class Computer():
                     self.memory[self.memory[i+1]] = int(o_input)
                     int(o_input)  # validation-light
                 elif opcode == OUTPUT:
-
-                    if num1 != 0:  # WTF?
-                        print("OUTPUT:", num1)
-                        return num1
+                    self.output.append(num1)
                 new_i = i + 2
             elif opcode == JUMP_IF_TRUE:
                 new_i = jump_if_true_f(num1, self.memory, num2, i)
@@ -90,7 +88,7 @@ class Computer():
                 equals_f(num1, num2, self.memory, self.memory[i+3])
                 new_i = i + 4
             elif opcode == ADJUST_REL_BASE:
-                self.relative_base = num1
+                self.relative_base += num1
                 new_i = i + 2
 
             _, _, _, opcode_new = self.parse_opcode(self.memory[i])
@@ -154,11 +152,21 @@ def day5():
 
 
 # day9
-computer.opcode_runned([109, 1, 204, -1, 1001, 100, 1,
-                        100, 1008, 100, 16, 101, 1006, 101, 0, 99])
-assert len(str(computer.opcode_runned(
-    [1102, 34915192, 34915192, 7, 4, 7, 99, 0]))) == 16
-computer.opcode_runned([104, 1125899906842624, 99]) == 1125899906842624
+def test_day91():
+    test1_input = [109, 1, 204, -1, 1001, 100, 1,
+                            100, 1008, 100, 16, 101, 1006, 101, 0, 99]
+    computer.opcode_runned(test1_input)
+    assert computer.output == test1_input
+def test_day92():
+    computer.opcode_runned(
+        [1102, 34915192, 34915192, 7, 4, 7, 99, 0])
+    assert len(str(computer.output[0])) == 16
+def test_day93():
+    computer.opcode_runned([104, 1125899906842624, 99])
+    assert computer.output[0] == 1125899906842624
+
+# test_day93()
 
 
-# computer.opcode_runned(data,1)
+computer.opcode_runned(data,1)
+print(computer.output)
