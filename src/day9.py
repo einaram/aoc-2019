@@ -5,22 +5,34 @@ class Computer():
         self.relative_base = 0
         self.memory = []
         self.output = []
-    def get_input_values(self, param_value, memory, idx):
+    def get_input_index(self, param_value, idx):
         POSITION_MODE = 0
         IMMEDIATE_MODE = 1
         RELATIVE_MODE = 2
+        memory = self.memory
         try:
             if param_value == POSITION_MODE:
-                num = memory[memory[idx+1]]
+                out_idx = memory[idx+1]
 
             elif param_value == IMMEDIATE_MODE:
-                num = memory[idx+1]
+                out_idx = idx+1
             elif param_value == RELATIVE_MODE:
-                num = memory[self.relative_base + memory[idx+1]]
+                out_idx = self.relative_base + memory[idx+1]
 
-            return int(num)
+            return int(out_idx)
         except:
             return None  # skipp num2-3-4 if not existing
+        
+    def get_input_values(self, param_value, idx):
+        memory = self.memory
+        out_idx = self.get_input_index( param_value, idx)
+        if out_idx is None:
+            num = None
+        else:
+            num = memory[out_idx]
+        return num
+
+    
 
     def parse_opcode(self, raw_opcode):
         full_opcode = str(raw_opcode).zfill(5)
@@ -58,8 +70,12 @@ class Computer():
 
             
 
-            num1 = self.get_input_values(param_mode1, self.memory, i)
-            num2 = self.get_input_values(param_mode2, self.memory, i+1)
+            num1 = self.get_input_values(param_mode1, i)
+            num2 = self.get_input_values(param_mode2, i+1)
+            num3 = self.get_input_values(param_mode3, i+2)
+            i_num1 = self.get_input_index(param_mode1, i)
+            i_num2 = self.get_input_index(param_mode1, i+1)
+            i_num3 = self.get_input_index(param_mode3, i+2)
 
             if opcode in [ADD, MULTIPL]:
                 if opcode == 1:
@@ -67,12 +83,11 @@ class Computer():
                 elif opcode == 2:
                     def opfunc(x, y): return x*y
                     
-                i_output = self.memory[i+3]
-                self.memory[i_output] = opfunc(num1, num2)
+                self.memory[i_num3] = opfunc(num1, num2)
                 new_i = i + 4
             elif opcode in [INPUT, OUTPUT]:
                 if opcode == INPUT:
-                    self.memory[self.memory[i+1]] = int(o_input)
+                    self.memory[i_num1] = int(o_input)
                     int(o_input)  # validation-light
                 elif opcode == OUTPUT:
                     self.output.append(num1)
@@ -82,10 +97,10 @@ class Computer():
             elif opcode == JUMP_IF_FALSE:
                 new_i = jump_if_false_f(num1, self.memory, num2, i)
             elif opcode == LESS_THAN:
-                less_than_f(num1, num2, self.memory, self.memory[i+3])
+                less_than_f(num1, num2, self.memory, i_num3)
                 new_i = i + 4
             elif opcode == EQUALS:
-                equals_f(num1, num2, self.memory, self.memory[i+3])
+                equals_f(num1, num2, self.memory, i_num3)
                 new_i = i + 4
             elif opcode == ADJUST_REL_BASE:
                 self.relative_base += num1
