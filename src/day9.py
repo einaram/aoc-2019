@@ -1,38 +1,34 @@
-
-
 class Computer():
     def __init__(self):
         self.relative_base = 0
         self.memory = []
         self.output = []
+
     def get_input_index(self, param_value, idx):
         POSITION_MODE = 0
         IMMEDIATE_MODE = 1
         RELATIVE_MODE = 2
         memory = self.memory
-        try:
-            if param_value == POSITION_MODE:
-                out_idx = memory[idx+1]
+        if param_value == POSITION_MODE:
+            out_idx = memory[idx+1]
 
-            elif param_value == IMMEDIATE_MODE:
-                out_idx = idx+1
-            elif param_value == RELATIVE_MODE:
-                out_idx = self.relative_base + memory[idx+1]
+        elif param_value == IMMEDIATE_MODE:
+            out_idx = idx+1
+        elif param_value == RELATIVE_MODE:
+            out_idx = self.relative_base + memory[idx+1]
 
-            return int(out_idx)
-        except:
-            return None  # skipp num2-3-4 if not existing
-        
+        return int(out_idx)
+
+
     def get_input_values(self, param_value, idx):
         memory = self.memory
-        out_idx = self.get_input_index( param_value, idx)
-        if out_idx is None:
-            num = None
-        else:
+        try:
+            out_idx = self.get_input_index(param_value, idx)
             num = memory[out_idx]
+        except:
+            print(f"Skipping {param_value}, idx {idx}")
+            num = None  # skipp num2-3-4 if not existing
         return num
-
-    
 
     def parse_opcode(self, raw_opcode):
         full_opcode = str(raw_opcode).zfill(5)
@@ -58,17 +54,13 @@ class Computer():
         ADJUST_REL_BASE = 9
 
         i = 0
-        iters = 0
-        while iters < 5000:
-            iters += 1
+        while True:
             if int(self.memory[i]) == 99:
                 print("EXIT 99")
                 break
 
             param_mode1, param_mode2, param_mode3, opcode = self.parse_opcode(
                 self.memory[i])
-
-            
 
             num1 = self.get_input_values(param_mode1, i)
             num2 = self.get_input_values(param_mode2, i+1)
@@ -82,7 +74,6 @@ class Computer():
                     def opfunc(x, y): return x+y
                 elif opcode == 2:
                     def opfunc(x, y): return x*y
-                    
                 self.memory[i_num3] = opfunc(num1, num2)
                 new_i = i + 4
             elif opcode in [INPUT, OUTPUT]:
@@ -152,30 +143,20 @@ computer = Computer()
 # day5
 
 
-def day5():
-    assert computer.opcode_runned(data, 1) == 4887191
-
-    assert computer.opcode_runned(data, 5) == 3419022
-    # test day5
-    assert computer.opcode_runned(
-        [3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8], 8) == 1  # ok
-    assert computer.opcode_runned(
-        [3, 9, 7, 9, 10, 9, 4, 9, 99, -1, 8], 7) == 1  # ok
-    print(computer.opcode_runned([3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
-                                  1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
-                                  999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99], 8))
-
-
 # day9
 def test_day91():
     test1_input = [109, 1, 204, -1, 1001, 100, 1,
-                            100, 1008, 100, 16, 101, 1006, 101, 0, 99]
+                   100, 1008, 100, 16, 101, 1006, 101, 0, 99]
     computer.opcode_runned(test1_input)
     assert computer.output == test1_input
+
+
 def test_day92():
     computer.opcode_runned(
         [1102, 34915192, 34915192, 7, 4, 7, 99, 0])
     assert len(str(computer.output[0])) == 16
+
+
 def test_day93():
     computer.opcode_runned([104, 1125899906842624, 99])
     assert computer.output[0] == 1125899906842624
@@ -183,5 +164,6 @@ def test_day93():
 # test_day93()
 
 
-computer.opcode_runned(data,1)
+
+computer.opcode_runned(data, 2)
 print(computer.output)
